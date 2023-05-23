@@ -1,15 +1,13 @@
-﻿using SimpraApi.Base.Data;
-
-namespace SimpraApi.Base;
-public abstract class EntityDeleteCommandHandler<TEntity, TRequest> :
+﻿namespace SimpraApi.Base;
+public abstract class DeleteCommandHandler<TEntity, TRequest> :
     EntityHandler<TEntity>,
     IRequestHandler<TRequest, IResult>
     where TEntity : BaseEntity
-    where TRequest : EntityDeleteCommandRequest
+    where TRequest : DeleteCommandRequest
 {
     protected readonly IRepository<TEntity> _repository;
 
-    protected EntityDeleteCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
+    protected DeleteCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
         _repository = base._unitOfWork.GetRepository<TEntity>();
     }

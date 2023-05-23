@@ -1,6 +1,4 @@
-﻿using SimpraApi.Base.Data;
-
-namespace SimpraApi.Base;
+﻿namespace SimpraApi.Base;
 public abstract class EntityHandler<TEntity> where TEntity : BaseEntity
 {
     protected readonly IUnitOfWork _unitOfWork;

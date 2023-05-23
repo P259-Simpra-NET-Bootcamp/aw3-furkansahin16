@@ -1,5 +1,4 @@
-﻿using SimpraApi.Base.Data;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace SimpraApi.Base;
 public abstract class GetWhereQueryHandler<TEntity, TRequest, TResponse> :

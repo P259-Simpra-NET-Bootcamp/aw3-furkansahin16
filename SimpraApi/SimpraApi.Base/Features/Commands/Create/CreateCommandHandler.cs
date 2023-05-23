@@ -1,16 +1,14 @@
-﻿using SimpraApi.Base.Data;
-
-namespace SimpraApi.Base;
-public abstract class EntityCreateCommandHandler<TEntity, TRequest, TResponse> :
+﻿namespace SimpraApi.Base;
+public abstract class CreateCommandHandler<TEntity, TRequest, TResponse> :
     EntityHandler<TEntity>,
     IRequestHandler<TRequest, IResult>
     where TEntity : BaseEntity
-    where TRequest : EntityCreateCommandRequest
+    where TRequest : CreateCommandRequest
     where TResponse : EntityResponse
 {
     protected readonly IRepository<TEntity> _repository;
     protected readonly IMapper _mapper;
-    public EntityCreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
+    public CreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
     {
         this._repository = base._unitOfWork.GetRepository<TEntity>();
         _mapper = mapper;

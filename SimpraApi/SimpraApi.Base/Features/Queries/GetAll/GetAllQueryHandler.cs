@@ -1,6 +1,4 @@
-﻿using SimpraApi.Base.Data;
-
-namespace SimpraApi.Base;
+﻿namespace SimpraApi.Base;
 public abstract class GetAllQueryHandler<TEntity, TRequest, TResponse> :
     EntityHandler<TEntity>,
     IRequestHandler<TRequest, IResult>

@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace SimpraApi.Base.Data;
+namespace SimpraApi.Base;
 public interface IRepository<TEntity> where TEntity : BaseEntity
 {
     Task DeleteAsync(TEntity entity);

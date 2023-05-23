@@ -1,4 +1,4 @@
-﻿namespace SimpraApi.Base.Data;
+﻿namespace SimpraApi.Base;
 public interface IUnitOfWork
 {
     Task<IResult?> SaveChangesAsync(CancellationToken cancellationToken = default);
