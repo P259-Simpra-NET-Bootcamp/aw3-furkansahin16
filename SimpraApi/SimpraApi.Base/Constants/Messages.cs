@@ -18,5 +18,7 @@ public static class Messages
     public const string EmailError = "Email address: '{0}' is already in use.";
     public const string DbError = "An error occurred during saving process.";
     public const string DbTransactionError = "An error occurred during saving process. All changes have been undone";
+    public const string DbTypeError = "Invalid db type";
+    public const string ConnectionStringError = "Connection string cannot be defined for given db type";
     #endregion
 }

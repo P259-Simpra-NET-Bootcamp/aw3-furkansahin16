@@ -1,4 +1,6 @@
-﻿namespace SimpraApi.Application;
+﻿using System.Linq.Expressions;
+
+namespace SimpraApi.Application;
 
 public class GetAllCategoryQueryHandler : GetAllQueryHandler<Category, GetAllCategoryQueryRequest, CategoryDetailDto>
 {

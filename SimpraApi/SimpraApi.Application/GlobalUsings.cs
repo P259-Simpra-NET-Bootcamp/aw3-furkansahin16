@@ -2,3 +2,4 @@
 global using SimpraApi.Domain;
 global using AutoMapper;
 global using FluentValidation;
+global using System.Linq.Expressions;

@@ -15,7 +15,7 @@ public abstract class GetAllQueryHandler<TEntity, TRequest, TResponse> :
     }
     public async virtual Task<IResult> Handle(TRequest request, CancellationToken cancellationToken)
     {
-        var entites = await _repository.GetAllAsync(false);
+        var entites = await _repository.GetAllAsync(false, Includes);
 
         return entites.Any() ?
             new SuccessDataResult<EntityResponse>(_mapper.Map<List<TResponse>>(entites),Messages.ListSuccess.Format(nameof(TEntity)),HttpStatusCode.OK) :

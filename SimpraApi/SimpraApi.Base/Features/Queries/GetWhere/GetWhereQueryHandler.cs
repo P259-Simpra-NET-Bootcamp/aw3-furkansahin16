@@ -10,7 +10,12 @@ public abstract class GetWhereQueryHandler<TEntity, TRequest, TResponse> :
 {
     protected readonly IRepository<TEntity> _repository;
     protected readonly IMapper _mapper;
-    protected GetWhereQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
+    public GetWhereQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
+    {
+        this._repository = base._unitOfWork.GetRepository<TEntity>();
+        _mapper = mapper;
+    }
+    public GetWhereQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, Expression<Func<TEntity, object>>[] includes) : base(unitOfWork, includes)
     {
         this._repository = base._unitOfWork.GetRepository<TEntity>();
         _mapper = mapper;
@@ -20,8 +25,8 @@ public abstract class GetWhereQueryHandler<TEntity, TRequest, TResponse> :
     {
         var expression = GetExpression(request);
         var entites = expression is null ?
-            await _repository.GetAllAsync(false) :
-            await _repository.GetAllAsync(expression, false);
+            await _repository.GetAllAsync(false, Includes) :
+            await _repository.GetAllAsync(expression, false, Includes);
 
         return entites.Any()
             ? new SuccessDataResult<EntityResponse>(_mapper.Map<List<TResponse>>(entites), Messages.ListSuccess.Format(nameof(TEntity)), HttpStatusCode.OK)
