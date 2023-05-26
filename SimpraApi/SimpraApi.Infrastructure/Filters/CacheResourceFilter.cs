@@ -57,7 +57,7 @@ public class CacheResourceFilter : IResourceFilter
 
             if (!int.TryParse(value, out int id))
             {
-                return new ErrorResponse(Messages.ValidationError, HttpStatusCode.BadRequest)
+                return new ErrorResponse(Messages.ValidationError, HttpStatusCode.Forbidden)
                 {
                     Errors = { $"The value:'{value}' is not valid for Id" }
                 };
