@@ -5,11 +5,12 @@ using SimpraApi.Persistance.EntityFramework;
 namespace SimpraApi.Persistance;
 public static class ServiceRegistration
 {
-    public static void AddPersistanceServices(this IServiceCollection services,IConfiguration configuration)
+    public static IServiceCollection AddPersistanceServices(this IServiceCollection services,IConfiguration configuration)
     {
         services
             .AddContextService(configuration)
             .AddScoped<IUnitOfWork, UnitOfWork>();
+        return services;
     }
     private static IServiceCollection AddContextService(this IServiceCollection services,IConfiguration configuration)
     {

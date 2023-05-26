@@ -1,4 +1,5 @@
-﻿using SimpraApi.Infrastructure;
+﻿using Microsoft.AspNetCore.Mvc;
+using SimpraApi.Infrastructure;
 
 namespace SimpraApi.Service;
 
@@ -11,13 +12,14 @@ public class Startup
         services.AddControllers(opt =>
         {
             opt.Filters.Add<ValidationFilter>();
-            opt.Filters.AddService<CacheResourceFilter>();
+            opt.Filters.Add<CacheResourceFilter>();
         });
         services.AddHttpContextAccessor();
         services
             .AddCustomSwaggerService()
             .AddApplicationServices()
-            .AddPersistanceServices(Configuration);
+            .AddPersistanceServices(Configuration)
+            .AddInfrastructureServices();
     }
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
@@ -27,7 +29,7 @@ public class Startup
         app.UseSwaggerUI(c =>
         {
             c.DefaultModelExpandDepth(-1);
-            c.SwaggerEndpoint("/swagger/v3/swagger.json", "Simpra");
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Simpra");
             c.DocumentTitle = "Simpra Api";
         });
 

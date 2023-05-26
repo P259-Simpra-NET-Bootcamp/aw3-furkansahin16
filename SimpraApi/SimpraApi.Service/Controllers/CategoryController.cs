@@ -6,13 +6,14 @@ namespace SimpraApi.Service.Controllers;
 public class CategoryController : BaseApiController
 {
     public CategoryController(IMediator mediator) : base(mediator) { }
+
     [HttpGet]
     public async Task<IResponse> GetAll() => await Mediator.Send(new GetAllCategoryQueryRequest());
 
     [HttpGet("{Id}")]
-    public async Task<IResponse> GetById(GetByIdCategoryQueryRequest request) => await Mediator.Send(request);
+    public async Task<IResponse> GetById([FromRoute]GetByIdCategoryQueryRequest request) => await Mediator.Send(request);
 
-    [HttpGet]
+    [HttpGet("search")]
     public async Task<IResponse> GetWhere([FromQuery] GetWhereCategoryQueryRequest request) => await Mediator.Send(request);
 
     [HttpPost]

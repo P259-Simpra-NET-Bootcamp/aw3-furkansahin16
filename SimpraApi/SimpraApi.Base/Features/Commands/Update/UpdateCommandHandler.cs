@@ -6,20 +6,15 @@ public abstract class UpdateCommandHandler<TEntity, TRequest, TResponse> :
     where TRequest : UpdateCommandRequest
     where TResponse : EntityResponse
 {
-    protected readonly IRepository<TEntity> _repository;
     protected readonly IMapper _mapper;
-    public UpdateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
-    {
-        this._repository = base._unitOfWork.GetRepository<TEntity>();
-        _mapper = mapper;
-    }
+    public UpdateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork) => _mapper = mapper;
     public async virtual Task<IResponse> Handle(TRequest request, CancellationToken cancellationToken)
     {
-        if (TryToGetById(request.Id, out TEntity? entity, out IResponse? response))
+        if (Entity is not null || TryToGetById(request.Id, out IResponse? response))
         {
-            var updatedModel = _mapper.Map(request, entity);
+            var updatedModel = _mapper.Map(request, Entity);
 
-            response = (await _unitOfWork.SaveChangesAsync(cancellationToken)) ??
+            response = (await UnitOfWork.SaveChangesAsync(cancellationToken)) ??
                 new SuccessDataResponse<EntityResponse>(_mapper.Map<TResponse>(updatedModel), Messages.UpdateSuccess.Format(nameof(TEntity)), HttpStatusCode.Accepted);
         }
         return response!;

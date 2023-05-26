@@ -5,19 +5,13 @@ public abstract class DeleteCommandHandler<TEntity, TRequest> :
     where TEntity : BaseEntity
     where TRequest : DeleteCommandRequest
 {
-    protected readonly IRepository<TEntity> _repository;
-
-    protected DeleteCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
-    {
-        _repository = base._unitOfWork.GetRepository<TEntity>();
-    }
-
+    protected DeleteCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork) { }
     public async virtual Task<IResponse> Handle(TRequest request, CancellationToken cancellationToken)
     {
-        if (TryToGetById(request.Id, out TEntity? entity, out IResponse? result))
+        if (TryToGetById(request.Id, out IResponse? result))
         {
-            await _repository.DeleteAsync(entity!);
-            result = (await _unitOfWork.SaveChangesAsync()) ??
+            await Repository.DeleteAsync(Entity!);
+            result = (await UnitOfWork.SaveChangesAsync()) ??
                 new SuccessResponse(Messages.DeleteSuccess.Format(nameof(TEntity)), HttpStatusCode.OK);
         }
         return result!;

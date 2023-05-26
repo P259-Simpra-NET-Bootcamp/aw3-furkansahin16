@@ -10,18 +10,18 @@ public class ProductController : BaseApiController
     [HttpGet]
     public async Task<IResponse> GetAll() => await Mediator.Send(new GetAllProductQueryRequest());
 
-    [HttpGet("{Id}")] 
+    [HttpGet("{Id}")]
     public async Task<IResponse> GetById(GetByIdProductQueryRequest request) => await Mediator.Send(request);
 
-    [HttpGet] 
-    public async Task<IResponse> GetWhere([FromQuery]GetWhereProductQueryRequest request) => await Mediator.Send(request);
+    [HttpGet("search")]
+    public async Task<IResponse> GetWhere([FromQuery] GetWhereProductQueryRequest request) => await Mediator.Send(request);
 
-    [HttpPost] 
+    [HttpPost]
     public async Task<IResponse> Create(CreateProductCommandRequest request) => await Mediator.Send(request);
 
-    [HttpPut] 
+    [HttpPut]
     public async Task<IResponse> Update(UpdateProductCommandRequest request) => await Mediator.Send(request);
 
-    [HttpDelete("{Id}")] 
+    [HttpDelete("{Id}")]
     public async Task<IResponse> Update(DeleteProductCommandRequest request) => await Mediator.Send(request);
 }

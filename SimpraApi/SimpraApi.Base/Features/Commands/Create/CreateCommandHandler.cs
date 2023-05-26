@@ -6,19 +6,14 @@ public abstract class CreateCommandHandler<TEntity, TRequest, TResponse> :
     where TRequest : CreateCommandRequest
     where TResponse : EntityResponse
 {
-    protected readonly IRepository<TEntity> _repository;
-    protected readonly IMapper _mapper;
-    public CreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
-    {
-        this._repository = base._unitOfWork.GetRepository<TEntity>();
-        _mapper = mapper;
-    }
+    private readonly IMapper _mapper;
+    public CreateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork) => _mapper = mapper;
     public async virtual Task<IResponse> Handle(TRequest request, CancellationToken cancellationToken)
     {
-        var entity = _mapper.Map<TEntity>(request);
-        await _repository.AddAsync(entity);
+        Entity = _mapper.Map<TEntity>(request);
+        await Repository.AddAsync(Entity);
 
-        return (await _unitOfWork.SaveChangesAsync(cancellationToken) ??
-            new SuccessDataResponse<EntityResponse>(_mapper.Map<TResponse>(entity), Messages.AddSuccess.Format(nameof(TEntity)), HttpStatusCode.Created));
+        return (await UnitOfWork.SaveChangesAsync(cancellationToken) ??
+            new SuccessDataResponse<EntityResponse>(_mapper.Map<TResponse>(Entity), Messages.AddSuccess.Format(nameof(TEntity)), HttpStatusCode.Created));
     }
 }

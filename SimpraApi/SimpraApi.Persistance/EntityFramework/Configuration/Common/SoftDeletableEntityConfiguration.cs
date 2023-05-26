@@ -1,6 +1,6 @@
 ﻿namespace SimpraApi.Persistance.EntityFramework;
 
-public class SoftDeletableEntityConfiguration<TEntity> : BaseEntityConfiguration<TEntity> where TEntity : SoftDeletableEntity
+public class SoftDeletableEntityConfiguration<TEntity> : AuditableEntityConfiguration<TEntity> where TEntity : SoftDeletableEntity
 {
     public override void Configure(EntityTypeBuilder<TEntity> builder)
     {
