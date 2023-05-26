@@ -9,5 +9,7 @@ public class CategoryConfiguration : SoftDeletableEntityConfiguration<Category>
         builder.Property(x => x.Name).IsRequired(true).HasMaxLength(30);
 
         builder.HasIndex(x => x.Name).IsUnique(true);
+
+        builder.HasMany(x=>x.Products).WithOne(x => x.Category).HasForeignKey(x=>x.CategoryId).OnDelete(DeleteBehavior.Restrict);
     }
 }

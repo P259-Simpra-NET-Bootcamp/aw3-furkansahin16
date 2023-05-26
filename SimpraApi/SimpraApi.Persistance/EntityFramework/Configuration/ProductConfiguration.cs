@@ -1,4 +1,6 @@
-﻿namespace SimpraApi.Persistance.EntityFramework;
+﻿using System.Security.Cryptography.X509Certificates;
+
+namespace SimpraApi.Persistance.EntityFramework;
 
 public class ProductConfiguration : SoftDeletableEntityConfiguration<Product>
 {
@@ -12,5 +14,7 @@ public class ProductConfiguration : SoftDeletableEntityConfiguration<Product>
         builder.Property(x => x.CategoryId).IsRequired(true);
 
         builder.HasIndex(x => x.Name).IsUnique(true);
+
+        builder.HasOne(x => x.Category).WithMany(x => x.Products).HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Restrict);
     }
 }

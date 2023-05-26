@@ -20,5 +20,6 @@ public static class Messages
     public const string DbTransactionError = "An error occurred during saving process. All changes have been undone";
     public const string DbTypeError = "Invalid db type";
     public const string ConnectionStringError = "Connection string cannot be defined for given db type";
+    public const string ValidationError = "Validation error.";
     #endregion
 }
