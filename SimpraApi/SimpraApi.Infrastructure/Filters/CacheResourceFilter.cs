@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
@@ -21,16 +22,10 @@ public class CacheResourceFilter : IResourceFilter
     public void OnResourceExecuting(ResourceExecutingContext context)
     {
         SetCacheKey(context, out _cacheKey, out _modelName);
-        if (_cache.TryGetValue(_cacheKey, out object cachedResult) &&
+        if (_cache.TryGetValue(_cacheKey, out IEnumerable<EntityResponse> cachedResult) &&
             string.Equals(context.HttpContext.Request.Method, "GET", StringComparison.OrdinalIgnoreCase))
         {
-            object? data = cachedResult is IEnumerable<object> result
-                ? GetDataFromCache(context, result)
-                : cachedResult;
-            IResponse response = data is not null
-                ? new SuccessDataResponse<object>(data, String.Format(Messages.ListSuccess, _modelName), HttpStatusCode.OK)
-                : new ErrorResponse(String.Format(Messages.ListError, _modelName)
-               , HttpStatusCode.NoContent);
+            var response = GetDataFromCache(context, cachedResult);
             context.Result = new ObjectResult(response);
         }
     }
@@ -46,29 +41,59 @@ public class CacheResourceFilter : IResourceFilter
     }
 
 
-    private object? GetDataFromCache(ResourceExecutingContext context, IEnumerable<object> result)
+    private IResponse GetDataFromCache(ResourceExecutingContext context, IEnumerable<EntityResponse> result)
     {
         if (context.HttpContext.Request.Query.Any())
         {
-            var filteredValues = result.Where(item =>
-            context.HttpContext.Request.Query.All(query =>
-            {
-                var propName = query.Key.ToLower();
-                var propValue = query.Value.ToString().ToLower();
-                var prop = item.GetType().GetProperties().FirstOrDefault(x => x.Name.ToLower() == propName);
-                var value = prop?.GetValue(item)?.ToString()?.ToLower();
-                return prop is null ? true : value?.Contains(propValue) ?? false;
-            })).ToList();
-            return filteredValues.Any() ? filteredValues : null;
+            var filteredValues = FilterByQuery(context, result);
+
+            return filteredValues.Any()
+                ? new SuccessDataResponse<IEnumerable<EntityResponse>>(filteredValues, String.Format(Messages.ListSuccess, _modelName), HttpStatusCode.OK)
+                : new ErrorResponse(String.Format(Messages.ListError, _modelName), HttpStatusCode.NoContent);
         }
-        return result;
+        else if (context.RouteData.Values.ContainsKey("id"))
+        {
+            var value = context.RouteData.Values["id"]!.ToString();
+
+            if (!int.TryParse(value, out int id))
+            {
+                return new ErrorResponse(Messages.ValidationError, HttpStatusCode.BadRequest)
+                {
+                    Errors = { $"The value:'{value}' is not valid for Id" }
+                };
+            }
+            var entity = result.FirstOrDefault(x => x.Id == id);
+            return entity is not null
+                ? new SuccessDataResponse<EntityResponse>(entity, Messages.GetSuccess.Format(_modelName!), HttpStatusCode.OK)
+                : new ErrorResponse(Messages.GetError.Format(_modelName!, value), HttpStatusCode.NotFound);
+
+        }
+        return new SuccessDataResponse<IEnumerable<EntityResponse>>(result, String.Format(Messages.ListSuccess, _modelName), HttpStatusCode.OK); ;
     }
+
+    private IEnumerable<EntityResponse> FilterByQuery(ResourceExecutingContext context, IEnumerable<EntityResponse> result)
+    {
+        var filterType = context.ActionDescriptor.Parameters.First().ParameterType;
+
+        return result.Where(item =>
+        context.HttpContext.Request.Query.All(query =>
+        {
+            var propName = query.Key.ToLower();
+            var propValue = query.Value.ToString().ToLower();
+            if (!filterType.GetProperties().Any(x => x.Name.ToLower() == propName)) return true;
+            var prop = item.GetType().GetProperties().FirstOrDefault(x => x.Name.ToLower() == propName);
+            var value = prop?.GetValue(item)?.ToString()?.ToLower();
+            return prop is null ? true : value?.Contains(propValue) ?? false;
+        })).ToList();
+    } 
+
     private object GetResponseData(IResponse response)
     {
         var responseType = response.GetType();
         var dataProperty = responseType.GetProperties().First(x => x.Name == "Data");
         return dataProperty.GetValue(response)!;
     }
+
     private bool ValidForCache(ResourceExecutedContext context, out IResponse? response, out bool clearCache)
     {
         clearCache = false;
@@ -78,9 +103,7 @@ public class CacheResourceFilter : IResourceFilter
             value.IsSuccess)
         {
             if (!string.Equals(context.HttpContext.Request.Method, "GET", StringComparison.OrdinalIgnoreCase)) clearCache = true;
-            else if (!context.HttpContext.Request.Query.Any() ||
-                     context.ModelState.Root.Children is null ||
-                     context.ModelState.Root.Children.All(x => string.IsNullOrEmpty(x.AttemptedValue)))
+            else if (context.ModelState.Root.Children is null)
             {
                 response = value;
                 return true;
@@ -88,15 +111,13 @@ public class CacheResourceFilter : IResourceFilter
         }
         return false;
     }
+
     private void SetCacheKey(ResourceExecutingContext context, out string cacheKey, out string modelName)
     {
         modelName = context.ActionDescriptor.RouteValues["controller"]!;
-        cacheKey = $"{modelName}_Get";
-        foreach (var argument in context.HttpContext.Request.RouteValues.Skip(2))
-        {
-            cacheKey += $"_{argument.Key}:'{argument.Value}'";
-        }
+        cacheKey = $"{modelName}_List";
     }
+
     private void ClearCache(bool clearCache)
     {
         if (clearCache)

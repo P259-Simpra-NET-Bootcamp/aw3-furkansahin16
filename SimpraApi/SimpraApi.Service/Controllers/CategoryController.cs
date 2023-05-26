@@ -23,5 +23,5 @@ public class CategoryController : BaseApiController
     public async Task<IResponse> Update(UpdateCategoryCommandRequest request) => await Mediator.Send(request);
 
     [HttpDelete("{Id}")]
-    public async Task<IResponse> Update(DeleteCategoryCommandRequest request) => await Mediator.Send(request);
+    public async Task<IResponse> Update([FromRoute]DeleteCategoryCommandRequest request) => await Mediator.Send(request);
 }

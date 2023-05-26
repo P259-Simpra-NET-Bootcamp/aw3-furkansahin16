@@ -1,8 +1,10 @@
-﻿namespace SimpraApi.Infrastructe;
+﻿using Microsoft.AspNetCore.Mvc;
 
-public class ValidationFilter : IAsyncActionFilter
+namespace SimpraApi.Infrastructe;
+
+public class ValidationFilter : ActionFilterAttribute
 {
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public override void OnActionExecuting(ActionExecutingContext context)
     {
         if (!context.ModelState.IsValid)
         {
@@ -11,7 +13,7 @@ public class ValidationFilter : IAsyncActionFilter
                 .SelectMany(modelState => modelState.Errors)
                 .Select(error => error.ErrorMessage)
                 .ToList();
+            context.Result = new ObjectResult(result);
         }
-        await next();
     }
 }
