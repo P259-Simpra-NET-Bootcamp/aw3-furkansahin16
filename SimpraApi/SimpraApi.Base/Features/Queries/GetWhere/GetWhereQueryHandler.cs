@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace SimpraApi.Base;
+﻿namespace SimpraApi.Base;
 public abstract class GetWhereQueryHandler<TEntity, TRequest, TResponse> :
     EntityHandler<TEntity>,
     IRequestHandler<TRequest, IResponse>
@@ -11,11 +9,6 @@ public abstract class GetWhereQueryHandler<TEntity, TRequest, TResponse> :
     protected readonly IRepository<TEntity> _repository;
     protected readonly IMapper _mapper;
     public GetWhereQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
-    {
-        this._repository = base._unitOfWork.GetRepository<TEntity>();
-        _mapper = mapper;
-    }
-    public GetWhereQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, Expression<Func<TEntity) : base(unitOfWork)
     {
         this._repository = base._unitOfWork.GetRepository<TEntity>();
         _mapper = mapper;

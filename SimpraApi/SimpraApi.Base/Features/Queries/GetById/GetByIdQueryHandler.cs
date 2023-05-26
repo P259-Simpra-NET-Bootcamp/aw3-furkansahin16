@@ -13,11 +13,7 @@ public abstract class GetByIdQueryHandler<TEntity, TRequest, TResponse> :
         this._repository = base._unitOfWork.GetRepository<TEntity>();
         _mapper = mapper;
     }
-    public GetByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, Expression<Func<TEntity) : base(unitOfWork)
-    {
-        this._repository = base._unitOfWork.GetRepository<TEntity>();
-        _mapper = mapper;
-    }
+    
     public async virtual Task<IResponse> Handle(TRequest request, CancellationToken cancellationToken)
     {
         if (TryToGetById(request.Id, out TEntity? entity, out IResponse? response))
