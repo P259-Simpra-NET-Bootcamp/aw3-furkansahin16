@@ -13,8 +13,8 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : BaseEn
 
     #region Command
     public async Task AddAsync(TEntity entity) => await _table.AddAsync(entity);
-    public async Task DeleteAsync(TEntity entity) => await Task.FromResult(_table.Remove(entity));
-    public async Task UpdateAsync(TEntity entity) => await Task.FromResult(_table.Update(entity));
+    public async Task DeleteAsync(TEntity entity) => await Task.FromResponse(_table.Remove(entity));
+    public async Task UpdateAsync(TEntity entity) => await Task.FromResponse(_table.Update(entity));
     #endregion
 
     #region Query

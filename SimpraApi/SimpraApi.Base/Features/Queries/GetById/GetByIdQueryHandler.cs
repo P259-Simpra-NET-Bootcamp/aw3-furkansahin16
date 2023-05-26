@@ -1,7 +1,7 @@
 ﻿namespace SimpraApi.Base;
 public abstract class GetByIdQueryHandler<TEntity, TRequest, TResponse> :
     EntityHandler<TEntity>,
-    IRequestHandler<TRequest, IResult>
+    IRequestHandler<TRequest, IResponse>
     where TEntity : BaseEntity
     where TRequest : GetByIdQueryRequest
     where TResponse : EntityResponse
@@ -13,17 +13,17 @@ public abstract class GetByIdQueryHandler<TEntity, TRequest, TResponse> :
         this._repository = base._unitOfWork.GetRepository<TEntity>();
         _mapper = mapper;
     }
-    public GetByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, Expression<Func<TEntity, object>>[] includes) : base(unitOfWork, includes)
+    public GetByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, Expression<Func<TEntity) : base(unitOfWork)
     {
         this._repository = base._unitOfWork.GetRepository<TEntity>();
         _mapper = mapper;
     }
-    public async virtual Task<IResult> Handle(TRequest request, CancellationToken cancellationToken)
+    public async virtual Task<IResponse> Handle(TRequest request, CancellationToken cancellationToken)
     {
-        if (TryToGetById(request.Id, out TEntity? entity, out IResult? result))
+        if (TryToGetById(request.Id, out TEntity? entity, out IResponse? response))
         {
-            result = new SuccessDataResult<EntityResponse>(_mapper.Map<TResponse>(entity),Messages.GetSuccess.Format(nameof(TEntity)),HttpStatusCode.OK);
+            response = new SuccessDataResponse<EntityResponse>(_mapper.Map<TResponse>(entity),Messages.GetSuccess.Format(nameof(TEntity)),HttpStatusCode.OK);
         }
-        return await Task.FromResult(result!);
+        return await Task.FromResult(response!);
     }
 }

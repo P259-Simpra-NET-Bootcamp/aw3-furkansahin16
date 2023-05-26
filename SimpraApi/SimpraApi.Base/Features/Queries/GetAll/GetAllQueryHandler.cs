@@ -1,7 +1,7 @@
 ﻿namespace SimpraApi.Base;
 public abstract class GetAllQueryHandler<TEntity, TRequest, TResponse> :
     EntityHandler<TEntity>,
-    IRequestHandler<TRequest, IResult>
+    IRequestHandler<TRequest, IResponse>
     where TEntity : BaseEntity
     where TRequest : GetAllQueryRequest
     where TResponse : EntityResponse
@@ -13,12 +13,12 @@ public abstract class GetAllQueryHandler<TEntity, TRequest, TResponse> :
         this._repository = base._unitOfWork.GetRepository<TEntity>();
         _mapper = mapper;
     }
-    public async virtual Task<IResult> Handle(TRequest request, CancellationToken cancellationToken)
+    public async virtual Task<IResponse> Handle(TRequest request, CancellationToken cancellationToken)
     {
         var entites = await _repository.GetAllAsync(false, Includes);
 
         return entites.Any() ?
-            new SuccessDataResult<EntityResponse>(_mapper.Map<List<TResponse>>(entites),Messages.ListSuccess.Format(nameof(TEntity)),HttpStatusCode.OK) :
-            new ErrorResult(Messages.ListError.Format(nameof(TEntity)),HttpStatusCode.NoContent);
+            new SuccessDataResponse<EntityResponse>(_mapper.Map<List<TResponse>>(entites),Messages.ListSuccess.Format(nameof(TEntity)),HttpStatusCode.OK) :
+            new ErrorResponse(Messages.ListError.Format(nameof(TEntity)),HttpStatusCode.NoContent);
     }
 }

@@ -20,7 +20,7 @@ public class UnitOfWork : IUnitOfWork
         return (IRepository<TEntity>)_repositories[entityType];
     }
 
-    public async Task<IResult?> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public async Task<IResponse?> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -29,15 +29,15 @@ public class UnitOfWork : IUnitOfWork
         }
         catch (Exception ex)
         {
-            return GetErrorResult(ex, Messages.DbError);
+            return GetErrorResponse(ex, Messages.DbError);
         }
         finally { this.Dispose(); }
     }
 
-    public async Task<IResult?> SaveChangesAsyncWithTransaction(CancellationToken cancellationToken = default)
+    public async Task<IResponse?> SaveChangesAsyncWithTransaction(CancellationToken cancellationToken = default)
     {
         var strategy = _context.Database.CreateExecutionStrategy();
-        IResult? result = null;
+        IResponse? response = null;
         await strategy.ExecuteAsync(async () =>
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -49,16 +49,16 @@ public class UnitOfWork : IUnitOfWork
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                result = GetErrorResult(ex, Messages.DbTransactionError);
+                response = GetErrorResponse(ex, Messages.DbTransactionError);
             }
             finally { this.Dispose(); }
         });
-        return result;
+        return response;
     }
     public void Dispose() => Clean(true);
-    private IResult GetErrorResult(Exception ex, string message)
+    private IResponse GetErrorResponse(Exception ex, string message)
     {
-        return new ErrorDataResult<Object>(ex.Data, message, HttpStatusCode.InternalServerError)
+        return new ErrorDataResponse<Object>(ex.Data, message, HttpStatusCode.InternalServerError)
         {
             Errors = new()
             {

@@ -1,4 +1,6 @@
-﻿namespace SimpraApi.Service;
+﻿using SimpraApi.Infrastructure;
+
+namespace SimpraApi.Service;
 
 public class Startup
 {
@@ -9,6 +11,7 @@ public class Startup
         services.AddControllers(opt =>
         {
             opt.Filters.Add<ValidationFilter>();
+            opt.Filters.AddService<CacheResourceFilter>();
         });
         services.AddHttpContextAccessor();
         services

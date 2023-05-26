@@ -13,10 +13,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Controllers\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\SimpraApi.Application\SimpraApi.Application.csproj" />
 		<ProjectReference Include="..\SimpraApi.Infrastructure\SimpraApi.Infrastructure.csproj" />
 		<ProjectReference Include="..\SimpraApi.Persistance\SimpraApi.Persistance.csproj" />

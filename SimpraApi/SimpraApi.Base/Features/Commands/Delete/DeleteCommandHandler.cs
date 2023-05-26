@@ -1,7 +1,7 @@
 ﻿namespace SimpraApi.Base;
 public abstract class DeleteCommandHandler<TEntity, TRequest> :
     EntityHandler<TEntity>,
-    IRequestHandler<TRequest, IResult>
+    IRequestHandler<TRequest, IResponse>
     where TEntity : BaseEntity
     where TRequest : DeleteCommandRequest
 {
@@ -12,13 +12,13 @@ public abstract class DeleteCommandHandler<TEntity, TRequest> :
         _repository = base._unitOfWork.GetRepository<TEntity>();
     }
 
-    public async virtual Task<IResult> Handle(TRequest request, CancellationToken cancellationToken)
+    public async virtual Task<IResponse> Handle(TRequest request, CancellationToken cancellationToken)
     {
-        if (TryToGetById(request.Id, out TEntity? entity, out IResult? result))
+        if (TryToGetById(request.Id, out TEntity? entity, out IResponse? result))
         {
             await _repository.DeleteAsync(entity!);
             result = (await _unitOfWork.SaveChangesAsync()) ??
-                new SuccessResult(Messages.DeleteSuccess.Format(nameof(TEntity)), HttpStatusCode.OK);
+                new SuccessResponse(Messages.DeleteSuccess.Format(nameof(TEntity)), HttpStatusCode.OK);
         }
         return result!;
     }

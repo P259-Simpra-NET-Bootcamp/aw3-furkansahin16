@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using SimpraApi.Base;
-using System.Net;
-
-namespace SimpraApi.Infrastructe;
+﻿namespace SimpraApi.Infrastructe;
 
 public class ValidationFilter : IAsyncActionFilter
 {
@@ -10,7 +6,7 @@ public class ValidationFilter : IAsyncActionFilter
     {
         if (!context.ModelState.IsValid)
         {
-            var result = new ErrorResult(Messages.ValidationError, HttpStatusCode.Forbidden);
+            var result = new ErrorResponse(Messages.ValidationError, HttpStatusCode.Forbidden);
             result.Errors = context.ModelState.Values
                 .SelectMany(modelState => modelState.Errors)
                 .Select(error => error.ErrorMessage)

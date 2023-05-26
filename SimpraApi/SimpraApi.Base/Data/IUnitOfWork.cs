@@ -1,7 +1,7 @@
 ﻿namespace SimpraApi.Base;
 public interface IUnitOfWork
 {
-    Task<IResult?> SaveChangesAsync(CancellationToken cancellationToken = default);
-    Task<IResult?> SaveChangesAsyncWithTransaction(CancellationToken cancellationToken = default);
+    Task<IResponse?> SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task<IResponse?> SaveChangesAsyncWithTransaction(CancellationToken cancellationToken = default);
     IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
 }

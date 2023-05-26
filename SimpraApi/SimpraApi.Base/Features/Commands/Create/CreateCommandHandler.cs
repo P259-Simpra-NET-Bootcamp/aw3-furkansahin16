@@ -1,7 +1,7 @@
 ﻿namespace SimpraApi.Base;
 public abstract class CreateCommandHandler<TEntity, TRequest, TResponse> :
     EntityHandler<TEntity>,
-    IRequestHandler<TRequest, IResult>
+    IRequestHandler<TRequest, IResponse>
     where TEntity : BaseEntity
     where TRequest : CreateCommandRequest
     where TResponse : EntityResponse
@@ -13,12 +13,12 @@ public abstract class CreateCommandHandler<TEntity, TRequest, TResponse> :
         this._repository = base._unitOfWork.GetRepository<TEntity>();
         _mapper = mapper;
     }
-    public async virtual Task<IResult> Handle(TRequest request, CancellationToken cancellationToken)
+    public async virtual Task<IResponse> Handle(TRequest request, CancellationToken cancellationToken)
     {
         var entity = _mapper.Map<TEntity>(request);
         await _repository.AddAsync(entity);
 
         return (await _unitOfWork.SaveChangesAsync(cancellationToken) ??
-            new SuccessDataResult<EntityResponse>(_mapper.Map<TResponse>(entity), Messages.AddSuccess.Format(nameof(TEntity)), HttpStatusCode.Created));
+            new SuccessDataResponse<EntityResponse>(_mapper.Map<TResponse>(entity), Messages.AddSuccess.Format(nameof(TEntity)), HttpStatusCode.Created));
     }
 }

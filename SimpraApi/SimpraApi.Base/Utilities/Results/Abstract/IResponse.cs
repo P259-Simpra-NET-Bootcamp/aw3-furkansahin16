@@ -1,5 +1,5 @@
 ﻿namespace SimpraApi.Base;
-public interface IResult
+public interface IResponse
 {
     bool IsSuccess { get; }
     string Message { get; }
