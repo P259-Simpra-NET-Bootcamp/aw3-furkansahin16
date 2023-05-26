@@ -20,6 +20,8 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : BaseEn
     #region Query
     public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>>? filter = null)
         => filter is null ? await GetAllActives(false).AnyAsync() : await GetAllActives(false).AnyAsync(filter);
+    public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> filter,bool includesDeleted = false)
+        => includesDeleted ? await _table.AsNoTracking().AnyAsync(filter) : await GetAllActives(false).AnyAsync(filter);
     public async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> expression, bool tracking = true, params Expression<Func<TEntity, object>>[]? includes)
         => await GetAllActives(tracking, includes).FirstOrDefaultAsync(expression);
     public TEntity? Find(object key, params Expression<Func<TEntity, object>>[]? includes)
