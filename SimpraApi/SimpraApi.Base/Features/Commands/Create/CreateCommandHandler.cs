@@ -14,6 +14,6 @@ public abstract class CreateCommandHandler<TEntity, TRequest, TResponse> :
         await Repository.AddAsync(Entity);
 
         return (await UnitOfWork.SaveChangesAsync(cancellationToken) ??
-            new SuccessDataResponse<EntityResponse>(_mapper.Map<TResponse>(Entity), Messages.AddSuccess.Format(nameof(TEntity)), HttpStatusCode.Created));
+            new SuccessDataResponse<EntityResponse>(_mapper.Map<TResponse>(Entity), Messages.AddSuccess.Format(typeof(TEntity).Name), HttpStatusCode.Created));
     }
 }

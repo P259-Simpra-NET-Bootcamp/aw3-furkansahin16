@@ -9,7 +9,7 @@ public class UpdateProductCommandHandler : UpdateCommandHandler<Product, UpdateP
             await Repository.AnyAsync(x => x.Name == request.Name.NormalizeString()) &&
             !String.Equals(Entity!.Name, request.Name, StringComparison.OrdinalIgnoreCase))
         {
-            return new ErrorResponse(Messages.UniqueFieldError.Format("Name", request.Name), HttpStatusCode.Forbidden));
+            return new ErrorResponse(Messages.UniqueFieldError.Format("Name", request.Name), HttpStatusCode.Forbidden);
         }
         return await base.Handle(request, cancellationToken);
     }

@@ -13,7 +13,7 @@ public abstract class GetAllQueryHandler<TEntity, TRequest, TResponse> :
         var entites = await Repository.GetAllAsync(false, Includes);
 
         return entites.Any() ?
-            new SuccessDataResponse<EntityResponse>(_mapper.Map<List<TResponse>>(entites),Messages.ListSuccess.Format(nameof(TEntity)),HttpStatusCode.OK) :
-            new ErrorResponse(Messages.ListError.Format(nameof(TEntity)),HttpStatusCode.NoContent);
+            new SuccessDataResponse<EntityResponse>(_mapper.Map<List<TResponse>>(entites),Messages.ListSuccess.Format(typeof(TEntity).Name),HttpStatusCode.OK) :
+            new ErrorResponse(Messages.ListError.Format(typeof(TEntity).Name),HttpStatusCode.NoContent);
     }
 }

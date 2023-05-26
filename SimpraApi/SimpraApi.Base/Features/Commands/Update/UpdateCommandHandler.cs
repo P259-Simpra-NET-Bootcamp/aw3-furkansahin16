@@ -15,7 +15,7 @@ public abstract class UpdateCommandHandler<TEntity, TRequest, TResponse> :
             var updatedModel = _mapper.Map(request, Entity);
 
             response = (await UnitOfWork.SaveChangesAsync(cancellationToken)) ??
-                new SuccessDataResponse<EntityResponse>(_mapper.Map<TResponse>(updatedModel), Messages.UpdateSuccess.Format(nameof(TEntity)), HttpStatusCode.Accepted);
+                new SuccessDataResponse<EntityResponse>(_mapper.Map<TResponse>(updatedModel), Messages.UpdateSuccess.Format(typeof(TEntity).Name), HttpStatusCode.Accepted);
         }
         return response!;
     }

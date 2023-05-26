@@ -12,7 +12,7 @@ public abstract class GetByIdQueryHandler<TEntity, TRequest, TResponse> :
     {
         if (TryToGetById(request.Id, out IResponse? response))
         {
-            response = new SuccessDataResponse<EntityResponse>(_mapper.Map<TResponse>(Entity),Messages.GetSuccess.Format(nameof(TEntity)),HttpStatusCode.OK);
+            response = new SuccessDataResponse<EntityResponse>(_mapper.Map<TResponse>(Entity),Messages.GetSuccess.Format(typeof(TEntity).Name),HttpStatusCode.OK);
         }
         return await Task.FromResult(response!);
     }
