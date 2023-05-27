@@ -31,12 +31,22 @@ public abstract class GetWhereQueryHandler<TEntity, TRequest, TResponse> :
             {
                 var parameter = Expression.Parameter(typeof(TEntity));
                 var propertyAccess = Expression.Property(parameter, filter.Name);
-                var filterValue = Expression.Constant(value!.ToString()!.Trim().ToLower());
-                var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
-                var containsExpression = Expression.Call(propertyAccess, containsMethod!, filterValue);
-                var expression = Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
-
-                expressions.Add(expression);
+                if (filter.PropertyType == typeof(string))
+                {
+                    var filterValue = Expression.Constant(value!.ToString()!.Trim().ToLower());
+                    var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+                    var containsExpression = Expression.Call(propertyAccess, containsMethod!, filterValue);
+                    var expression = Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
+                    expressions.Add(expression);
+                }
+                else if (filter.PropertyType == typeof(int))
+                {
+                    var filterValue = Expression.Constant(value);
+                    var equalsMethod = typeof(int).GetMethod("Equals", new[] { typeof(int) });
+                    var equalsExpression = Expression.Call(propertyAccess, equalsMethod!, filterValue);
+                    var expression = Expression.Lambda<Func<TEntity, bool>>(equalsExpression, parameter);
+                    expressions.Add(expression);
+                }
             }
         }
 

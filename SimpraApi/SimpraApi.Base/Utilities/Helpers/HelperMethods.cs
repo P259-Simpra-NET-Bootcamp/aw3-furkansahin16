@@ -1,4 +1,6 @@
-﻿namespace SimpraApi.Base;
+﻿using MediatR;
+
+namespace SimpraApi.Base;
 public static class HelperMethods
 {
     public static string NormalizeString(this string str)
@@ -28,8 +30,14 @@ public static class HelperMethods
         }
         return false;
     }
+
     public static bool IsValidDate(this string date)
     {
         return DateTime.TryParse(date, out _);
+    }
+
+    public static bool IsValidUrl(this string url)
+    {
+        return Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out _);
     }
 }

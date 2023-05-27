@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace SimpraApi.Application;
+﻿namespace SimpraApi.Application;
 public class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommandRequest>
 {
     public UpdateProductCommandValidator()
@@ -10,7 +8,7 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
             .MaximumLength(30).WithMessage("Product name must be less than 30 character");
         RuleFor(x => x.Url)
             .NotEmpty().WithMessage("Product url cannot be empty")
-            .Matches(new Regex(@"^[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$")).WithMessage("Invalid url format")
+            .Must(root => root.IsValidUrl()).WithMessage("Invalid url format")
             .MaximumLength(30).WithMessage("Product url must be less than 30 character");
         RuleFor(x => x.Tag)
             .NotEmpty().WithMessage("Product tag cannot be empty")

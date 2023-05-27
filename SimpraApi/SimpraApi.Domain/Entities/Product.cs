@@ -8,6 +8,6 @@ public class Product : SoftDeletableEntity
     public string Tag { get; set; } = null!;
 
     //Navigation Properties
-    public Category Category { get; set; } = null!;
+    public virtual Category Category { get; set; } = null!;
     public int CategoryId { get; set; }
 }

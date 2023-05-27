@@ -11,6 +11,12 @@ public class UpdateProductCommandHandler : UpdateCommandHandler<Product, UpdateP
         {
             return new ErrorResponse(Messages.UniqueFieldError.Format("Name", request.Name), HttpStatusCode.Forbidden);
         }
+        if (Entity is not null &&
+            Entity!.CategoryId != request.CategoryId &&
+            (await UnitOfWork.GetRepository<Category>().GetAsync(x => x.Id == request.CategoryId) is null))
+        {
+            return new ErrorResponse(Messages.GetError.Format(nameof(Category), request.CategoryId.ToString()), HttpStatusCode.NotFound);
+        }
         return await base.Handle(request, cancellationToken);
     }
 }

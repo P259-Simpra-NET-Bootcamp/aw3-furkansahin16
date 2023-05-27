@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
@@ -48,7 +47,7 @@ public class CacheResourceFilter : IResourceFilter
             var filteredValues = FilterByQuery(context, result);
 
             return filteredValues.Any()
-                ? new SuccessDataResponse<IEnumerable<EntityResponse>>(filteredValues, String.Format(Messages.ListSuccess, _modelName), HttpStatusCode.OK)
+                ? new SuccessDataResponse<IEnumerable<object>>(filteredValues, String.Format(Messages.ListSuccess, _modelName), HttpStatusCode.OK)
                 : new ErrorResponse(String.Format(Messages.ListError, _modelName), HttpStatusCode.NoContent);
         }
         else if (context.RouteData.Values.ContainsKey("id"))
@@ -64,14 +63,14 @@ public class CacheResourceFilter : IResourceFilter
             }
             var entity = result.FirstOrDefault(x => x.Id == id);
             return entity is not null
-                ? new SuccessDataResponse<EntityResponse>(entity, Messages.GetSuccess.Format(_modelName!), HttpStatusCode.OK)
+                ? new SuccessDataResponse<object>(entity, Messages.GetSuccess.Format(_modelName!), HttpStatusCode.OK)
                 : new ErrorResponse(Messages.GetError.Format(_modelName!, value), HttpStatusCode.NotFound);
 
         }
         return new SuccessDataResponse<IEnumerable<EntityResponse>>(result, String.Format(Messages.ListSuccess, _modelName), HttpStatusCode.OK); ;
     }
 
-    private IEnumerable<EntityResponse> FilterByQuery(ResourceExecutingContext context, IEnumerable<EntityResponse> result)
+    private IEnumerable<object> FilterByQuery(ResourceExecutingContext context, IEnumerable<object> result)
     {
         var filterType = context.ActionDescriptor.Parameters.First().ParameterType;
 
@@ -82,10 +81,17 @@ public class CacheResourceFilter : IResourceFilter
             var propValue = query.Value.ToString().ToLower();
             if (!filterType.GetProperties().Any(x => x.Name.ToLower() == propName)) return true;
             var prop = item.GetType().GetProperties().FirstOrDefault(x => x.Name.ToLower() == propName);
-            var value = prop?.GetValue(item)?.ToString()?.ToLower();
-            return prop is null ? true : value?.Contains(propValue) ?? false;
+            var value = prop?.GetValue(item);
+            if (value is int intValue)
+            {
+                if (int.TryParse(propValue, out var parsedValue))
+                    return intValue == parsedValue;
+                return false;
+            }
+            var stringValue = value?.ToString()?.ToLower();
+            return prop is null ? true : stringValue?.Contains(propValue) ?? false;
         })).ToList();
-    } 
+    }
 
     private object GetResponseData(IResponse response)
     {
